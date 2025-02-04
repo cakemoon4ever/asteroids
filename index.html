@@ -4,39 +4,36 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Todos os arquivos estão na raiz /asteroids -->
+  <!-- Todos os arquivos estão na raiz (/asteroids) -->
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet" />
-  <link rel="icon" href="405-4056691_spaceship-png.png" type="image/x-icon" />
+  <!-- O favicon usa logo.png -->
+  <link rel="icon" href="logo.png" type="image/x-icon" />
   <title>Cakemoon Asteroids Battle</title>
 </head>
 <body>
-  <!-- Splash Screen -->
-  <div id="splashModal">
-    <div id="splashContent">
-      <!-- A imagem do logo -->
-      <img id="splashLogo" src="logo.png" alt="Logo Cakemoon Asteroids Battle" />
-      <!-- O nome do jogo, que começa grande e diminui com efeito de pulsação e glow -->
-      <h1 id="splashTitle">Cakemoon Asteroids Battle</h1>
-    </div>
-  </div>
+  <!-- Header fixo com a logo e o nome do jogo -->
+  <header id="gameHeader">
+    <img id="headerLogo" src="logo.png" alt="Logo" />
+    <h1 id="headerTitle">Cakemoon Asteroids Battle</h1>
+  </header>
 
-  <!-- Modal de Instruções -->
-  <div id="instructionsModal">
+  <!-- Modal de Instruções (em inglês) -->
+  <div id="instructionsModal" class="hidden">
     <div id="instructionsContent">
-      <h2>Como Jogar</h2>
+      <h2>How to Play</h2>
       <p>
-        Use as setas para mover a nave:<br>
-        - Seta para cima: acelerar<br>
-        - Setas para esquerda/direita: girar<br>
-        - Espaço: atirar
+        Use the arrow keys to move your ship:<br>
+        - Up Arrow: Accelerate<br>
+        - Left/Right Arrows: Rotate<br>
+        - Space Bar: Fire lasers
       </p>
       <p>
-        Você começa com 3 vidas. As vidas são exibidas no canto superior esquerdo.<br>
-        O placar aparece no topo (sua pontuação e o melhor score).<br>
-        Desvie dos asteroides e destrua-os com seus lasers!
+        You start with 3 lives (displayed as mini-ships in the top left corner).<br>
+        Your score appears at the top right and the best score (BEST) in the center.<br>
+        Avoid asteroids and destroy them with your lasers!
       </p>
-      <button id="startGameBtn" class="button">Iniciar Jogo</button>
+      <button id="startGameBtn" class="button">Start Game</button>
     </div>
   </div>
 
@@ -46,26 +43,15 @@
   <!-- Scripts -->
   <script src="script.js"></script>
   <script>
-    // Variáveis para controle dos modais
-    const splashModal = document.getElementById('splashModal');
-    const instructionsModal = document.getElementById('instructionsModal');
-    const startGameBtn = document.getElementById('startGameBtn');
-
-    // Ao carregar a página, inicia a animação do splash.
+    // Exibe o modal de instruções após um pequeno delay para que o header fique visível
     window.addEventListener('load', function() {
-      // Após 3 segundos, dispara a animação de "zoom out" do splash.
+      // Aguarda 1 segundo antes de mostrar as instruções
       setTimeout(function() {
-        splashModal.classList.add('hidden');
-      }, 3000);
-      // Exibe o modal de instruções após 3,5 segundos (após o splash)
-      setTimeout(function() {
-        instructionsModal.classList.remove('hidden');
-      }, 3500);
+        document.getElementById('instructionsModal').classList.remove('hidden');
+      }, 1000);
     });
-
-    // Ao clicar em "Iniciar Jogo", oculta o modal de instruções.
-    startGameBtn.addEventListener('click', function() {
-      instructionsModal.classList.add('hidden');
+    document.getElementById('startGameBtn').addEventListener('click', function() {
+      document.getElementById('instructionsModal').classList.add('hidden');
     });
   </script>
 </body>
