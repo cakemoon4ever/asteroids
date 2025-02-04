@@ -25,7 +25,7 @@ body {
 /* ===================================================================
    Background
    =================================================================== */
-/* Utiliza a imagem back2.gif (na raiz) como fundo com opacidade */
+/* A imagem de fundo (back2.gif) está na raiz */
 body::before {
   content: "";
   position: fixed;
@@ -42,7 +42,6 @@ body::before {
 /* ===================================================================
    Splash Screen
    =================================================================== */
-/* A div #splashModal cobre toda a tela para exibir a logo do jogo */
 #splashModal {
   position: fixed;
   top: 0;
@@ -53,49 +52,118 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
-  transition: opacity 1s ease-out;
+  z-index: 3000;
+  /* Inicialmente, sem classe "hidden" */
+  transition: opacity 1s ease-out, transform 1s ease-out;
 }
 
 #splashModal.hidden {
   opacity: 0;
   pointer-events: none;
+  transform: scale(0.5); /* Diminui o tamanho para 50% */
 }
 
-/* A imagem da logo (logo.png) é centralizada e recebe efeito de glow */
-#splashModal img {
-  max-width: 300px;
+#splashContent {
+  text-align: center;
+}
+
+#splashLogo {
+  max-width: 500px;
+  /* Começa maior e diminui com a animação via transform (pode ajustar conforme desejar) */
+  transform: scale(1.2);
+  transition: transform 1s ease-out;
   filter: drop-shadow(0 0 10px #00eaff);
-  animation: pulse 2s infinite;
+  animation: pulseLogo 2s infinite;
 }
 
-/* Animação de pulso para o efeito neon na logo */
-@keyframes pulse {
+@keyframes pulseLogo {
   0% { filter: drop-shadow(0 0 5px #00eaff); }
   50% { filter: drop-shadow(0 0 20px #00eaff); }
   100% { filter: drop-shadow(0 0 5px #00eaff); }
 }
 
-/* ===================================================================
-   Crypto Ticker (Exemplo de Elemento Neon Fixo)
-   =================================================================== */
-#crypto-ticker {
-  position: fixed;
-  top: 0;
-  width: 100%;
-  padding: 15px 0;
-  background: #111;
-  font-size: 20px;
-  text-align: center;
-  z-index: 1000;
+#splashTitle {
+  font-size: 48px;
+  margin-top: 20px;
   color: #00eaff;
-  animation: tickerPulse 2s infinite;
+  text-shadow: 0 0 20px #00eaff, 0 0 40px #00eaff;
+  transform: scale(1.2);
+  transition: transform 1s ease-out;
+  animation: pulseText 2s infinite;
 }
 
-@keyframes tickerPulse {
-  0% { text-shadow: 0 0 5px #00eaff; }
-  50% { text-shadow: 0 0 20px #00eaff; }
-  100% { text-shadow: 0 0 5px #00eaff; }
+@keyframes pulseText {
+  0% { text-shadow: 0 0 10px #00eaff; }
+  50% { text-shadow: 0 0 30px #00eaff; }
+  100% { text-shadow: 0 0 10px #00eaff; }
+}
+
+/* ===================================================================
+   Instruções (Modal)
+   =================================================================== */
+#instructionsModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2500;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.5s ease-out;
+}
+
+#instructionsModal:not(.hidden) {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+#instructionsModal.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#instructionsContent {
+  background: rgba(0, 0, 0, 0.95);
+  border: 3px solid #00eaff;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  max-width: 400px;
+}
+
+#instructionsContent h2 {
+  font-size: 28px;
+  margin-bottom: 15px;
+  color: #00eaff;
+  text-shadow: 0 0 10px #00eaff;
+}
+
+#instructionsContent p {
+  font-size: 16px;
+  margin-bottom: 15px;
+  line-height: 1.5;
+}
+
+#startGameBtn {
+  padding: 10px 20px;
+  font-size: 16px;
+  border: none;
+  border-radius: 8px;
+  background: #00eaff;
+  color: #000;
+  cursor: pointer;
+  box-shadow: 0 0 15px #00eaff;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+#startGameBtn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px #00eaff;
 }
 
 /* ===================================================================
@@ -127,4 +195,26 @@ canvas {
 .button:hover {
   transform: scale(1.1);
   box-shadow: 0 0 25px #00eaff;
+}
+
+/* ===================================================================
+   Exemplo: Crypto Ticker (opcional)
+   =================================================================== */
+#crypto-ticker {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 15px 0;
+  background: #111;
+  font-size: 20px;
+  text-align: center;
+  z-index: 1000;
+  color: #00eaff;
+  animation: tickerPulse 2s infinite;
+}
+
+@keyframes tickerPulse {
+  0% { text-shadow: 0 0 5px #00eaff; }
+  50% { text-shadow: 0 0 20px #00eaff; }
+  100% { text-shadow: 0 0 5px #00eaff; }
 }
