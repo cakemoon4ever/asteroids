@@ -22,7 +22,10 @@ body {
   position: relative;
 }
 
-/* BACKGROUND: a imagem back2.gif está na raiz */
+/* ===================================================================
+   Background
+   =================================================================== */
+/* Utiliza a imagem back2.gif (na raiz) como fundo com opacidade */
 body::before {
   content: "";
   position: fixed;
@@ -36,7 +39,46 @@ body::before {
   z-index: -2;
 }
 
-/* Exemplo de elemento fixo com efeito neon (Crypto Ticker) */
+/* ===================================================================
+   Splash Screen
+   =================================================================== */
+/* A div #splashModal cobre toda a tela para exibir a logo do jogo */
+#splashModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  transition: opacity 1s ease-out;
+}
+
+#splashModal.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* A imagem da logo (logo.png) é centralizada e recebe efeito de glow */
+#splashModal img {
+  max-width: 300px;
+  filter: drop-shadow(0 0 10px #00eaff);
+  animation: pulse 2s infinite;
+}
+
+/* Animação de pulso para o efeito neon na logo */
+@keyframes pulse {
+  0% { filter: drop-shadow(0 0 5px #00eaff); }
+  50% { filter: drop-shadow(0 0 20px #00eaff); }
+  100% { filter: drop-shadow(0 0 5px #00eaff); }
+}
+
+/* ===================================================================
+   Crypto Ticker (Exemplo de Elemento Neon Fixo)
+   =================================================================== */
 #crypto-ticker {
   position: fixed;
   top: 0;
@@ -47,16 +89,18 @@ body::before {
   text-align: center;
   z-index: 1000;
   color: #00eaff;
-  animation: pulse 2s infinite;
+  animation: tickerPulse 2s infinite;
 }
 
-@keyframes pulse {
+@keyframes tickerPulse {
   0% { text-shadow: 0 0 5px #00eaff; }
   50% { text-shadow: 0 0 20px #00eaff; }
   100% { text-shadow: 0 0 5px #00eaff; }
 }
 
-/* Estilo do Canvas */
+/* ===================================================================
+   Canvas do Jogo
+   =================================================================== */
 canvas {
   border-radius: 10px;
   margin: 0 auto;
@@ -65,7 +109,9 @@ canvas {
   box-shadow: 0 0 20px #00eaff;
 }
 
-/* Botões e elementos extras com efeito neon */
+/* ===================================================================
+   Botões e Elementos Extras com Efeito Neon
+   =================================================================== */
 .button {
   padding: 14px 28px;
   font-size: 1rem;
