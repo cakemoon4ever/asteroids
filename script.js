@@ -33,21 +33,23 @@ var canv = document.getElementById("gameCanvas");
 var ctx = canv.getContext("2d");
 
 // CONFIGURAÇÃO DE IMAGENS E EFEITOS NEON
-// Imagem da nave (ship.png deve estar na raiz)
+// Imagem da nave
 var shipImg = new Image();
 shipImg.src = "ship.png";
 
-// Imagens dos asteroides (criptomoedas)
-// Os arquivos crypto1.png, crypto2.png e crypto3.png também estão na raiz
+// Imagens dos asteroides (criptomoedas): crypto1.png a crypto8.png
 var cryptoImgs = [];
-var cryptoSrcs = ["crypto1.png", "crypto2.png", "crypto3.png"];
+var cryptoSrcs = [
+  "crypto1.png", "crypto2.png", "crypto3.png", "crypto4.png",
+  "crypto5.png", "crypto6.png", "crypto7.png", "crypto8.png"
+];
 cryptoSrcs.forEach(src => {
   let img = new Image();
   img.src = src;
   cryptoImgs.push(img);
 });
 
-// Funções de glow
+// Funções de glow para efeitos neon
 function applyGlow(color = "#00eaff") {
   ctx.shadowBlur = 20;
   ctx.shadowColor = color;
@@ -57,7 +59,7 @@ function resetGlow() {
   ctx.shadowColor = "transparent";
 }
 
-// SONS – os arquivos de áudio devem estar na raiz
+// SONS – os arquivos de áudio estão na raiz
 var fxExplode = new Sound("explode.m4a");
 var fxHit = new Sound("hit.m4a", 5);
 var fxLaser = new Sound("laser.m4a", 5, 0.5);
@@ -69,14 +71,13 @@ var roidsLeft, roidsTotal;
 var level, lives, roids, score, scoreHigh, ship, text, textAlpha;
 newGame();
 
-// EVENTOS
+// EVENTOS DE TECLADO
 document.addEventListener("keydown", keyDown);
 document.addEventListener("keyup", keyUp);
 
-// LOOP DO JOGO
+// LOOP DE ATUALIZAÇÃO DO JOGO
 setInterval(update, 1000 / FPS);
 
-// FUNÇÃO QUE CRIA O CONJUNTO DE ASTEROIDES
 function createAsteroidBelt() {
   roids = [];
   roidsTotal = (ROID_NUM + level) * 7;
@@ -91,7 +92,6 @@ function createAsteroidBelt() {
   }
 }
 
-// DESTROI O ASTEROIDE (e divide, se necessário)
 function destroyAsteroid(index) {
   var x = roids[index].x;
   var y = roids[index].y;
@@ -113,7 +113,7 @@ function destroyAsteroid(index) {
     scoreHigh = score;
     localStorage.setItem(SAVE_KEY_SCORE, scoreHigh);
   }
-  
+
   roids.splice(index, 1);
   fxHit.play();
   roidsLeft--;
@@ -125,12 +125,10 @@ function destroyAsteroid(index) {
   }
 }
 
-// FUNÇÃO AUXILIAR DE DISTÂNCIA
 function distBetweenPoints(x1, y1, x2, y2) {
   return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
 }
 
-// DESENHA A NAVE (com imagem e efeito neon)
 function drawShip(x, y, a) {
   ctx.save();
   ctx.translate(x, y);
@@ -141,20 +139,17 @@ function drawShip(x, y, a) {
   ctx.restore();
 }
 
-// EXPLODE A NAVE
 function explodeShip() {
   ship.explodeTime = Math.ceil(SHIP_EXPLODE_DUR * FPS);
   fxExplode.play();
 }
 
-// GAME OVER
 function gameOver() {
   ship.dead = true;
   text = "Game Over";
   textAlpha = 1.0;
 }
 
-// EVENTOS DE TECLADO
 function keyDown(ev) {
   if (ship.dead) return;
   switch(ev.keyCode) {
@@ -191,7 +186,6 @@ function keyUp(ev) {
   }
 }
 
-// CRIA UM ASTEROIDE COM IMAGEM DE CRIPTOMOEDA ALEATÓRIA
 function newAsteroid(x, y, r) {
   var lvlMult = 1 + 0.1 * level;
   var roid = {
@@ -207,12 +201,10 @@ function newAsteroid(x, y, r) {
   for (var i = 0; i < roid.vert; i++) {
     roid.offs.push(Math.random() * ROID_JAG * 2 + 1 - ROID_JAG);
   }
-  // Seleciona uma imagem de criptomoeda aleatoriamente
   roid.img = cryptoImgs[Math.floor(Math.random() * cryptoImgs.length)];
   return roid;
 }
 
-// INICIA UM NOVO JOGO
 function newGame() {
   level = 0;
   lives = GAME_LIVES;
@@ -223,7 +215,6 @@ function newGame() {
   newLevel();
 }
 
-// INICIA UM NOVO NÍVEL
 function newLevel() {
   music.setAsteroidRatio(1);
   text = "Level " + (level + 1);
@@ -231,7 +222,6 @@ function newLevel() {
   createAsteroidBelt();
 }
 
-// CRIA A NAVE
 function newShip() {
   return {
     x: canv.width / 2,
@@ -250,7 +240,6 @@ function newShip() {
   };
 }
 
-// ATIRA LASER
 function shootLaser() {
   if (ship.canShoot && ship.lasers.length < LASER_MAX) {
     ship.lasers.push({
@@ -266,7 +255,6 @@ function shootLaser() {
   ship.canShoot = false;
 }
 
-// CLASSES DE SOM E MÚSICA
 function Music(srcLow, srcHigh) {
   this.soundLow = new Audio(srcLow);
   this.soundHigh = new Audio(srcHigh);
@@ -315,18 +303,15 @@ function Sound(src, maxStreams = 1, vol = 1.0) {
   }
 }
 
-// LOOP DE ATUALIZAÇÃO DO JOGO
 function update() {
   var blinkOn = ship.blinkNum % 2 === 0;
   var exploding = ship.explodeTime > 0;
   
   music.tick();
   
-  // DESENHA O FUNDO
   ctx.fillStyle = "#000";
   ctx.fillRect(0, 0, canv.width, canv.height);
   
-  // DESENHA OS ASTEROIDES (imagens de criptomoeda com glow neon)
   for (var i = 0; i < roids.length; i++) {
     var a = roids[i].a, r = roids[i].r, x = roids[i].x, y = roids[i].y;
     ctx.save();
@@ -336,7 +321,6 @@ function update() {
     ctx.drawImage(roids[i].img, -r, -r, r * 2, r * 2);
     resetGlow();
     ctx.restore();
-    
     if (SHOW_BOUNDING) {
       ctx.strokeStyle = "lime";
       ctx.beginPath();
@@ -345,7 +329,6 @@ function update() {
     }
   }
   
-  // MOVIMENTO E ACELERAÇÃO DA NAVE
   if (ship.thrusting && !ship.dead) {
     ship.thrust.x += SHIP_THRUST * Math.cos(ship.a) / FPS;
     ship.thrust.y -= SHIP_THRUST * Math.sin(ship.a) / FPS;
@@ -378,7 +361,6 @@ function update() {
     fxThrust.stop();
   }
   
-  // DESENHA A NAVE
   if (!exploding) {
     if (blinkOn && !ship.dead) {
       drawShip(ship.x, ship.y, ship.a);
@@ -391,7 +373,6 @@ function update() {
       }
     }
   } else {
-    // ANIMAÇÃO DE EXPLOSÃO (círculos concêntricos com cores neon)
     var explosionColors = ["#ff0055", "#ff5500", "#ffaa00", "#ffff00", "#ffffff"];
     for (var i = 0; i < explosionColors.length; i++) {
       ctx.fillStyle = explosionColors[i];
@@ -406,7 +387,6 @@ function update() {
     ctx.fillRect(ship.x - 1, ship.y - 1, 2, 2);
   }
   
-  // DESENHA OS LASERS
   for (var i = 0; i < ship.lasers.length; i++) {
     if (ship.lasers[i].explodeTime === 0) {
       ctx.fillStyle = "#ff0000";
@@ -429,7 +409,6 @@ function update() {
     }
   }
   
-  // DESENHA O TEXTO (Level, Game Over, etc)
   if (textAlpha >= 0) {
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
@@ -441,26 +420,22 @@ function update() {
     newGame();
   }
   
-  // DESENHA AS VIDAS
   for (var i = 0; i < lives; i++) {
     drawShip(SHIP_SIZE + i * SHIP_SIZE * 1.2, SHIP_SIZE, 0.5 * Math.PI);
   }
   
-  // DESENHA O SCORE
   ctx.textAlign = "right";
   ctx.textBaseline = "middle";
   ctx.fillStyle = "#ffffff";
   ctx.font = TEXT_SIZE + "px Orbitron";
   ctx.fillText(score, canv.width - SHIP_SIZE / 2, SHIP_SIZE);
   
-  // DESENHA O HIGH SCORE
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
   ctx.fillStyle = "#ffffff";
   ctx.font = (TEXT_SIZE * 0.75) + "px Orbitron";
   ctx.fillText("BEST " + scoreHigh, canv.width / 2, SHIP_SIZE);
   
-  // DETECTA COLISÕES: LASERS x ASTEROIDES
   for (var i = roids.length - 1; i >= 0; i--) {
     var ax = roids[i].x, ay = roids[i].y, ar = roids[i].r;
     for (var j = ship.lasers.length - 1; j >= 0; j--) {
@@ -473,7 +448,6 @@ function update() {
     }
   }
   
-  // DETECTA COLISÕES: NAVE x ASTEROIDES
   if (!exploding) {
     if (ship.blinkNum === 0 && !ship.dead) {
       for (var i = 0; i < roids.length; i++) {
@@ -495,13 +469,11 @@ function update() {
     }
   }
   
-  // CONTROLE DE BORDAS (wrap-around)
   if (ship.x < 0 - ship.r) ship.x = canv.width + ship.r;
   else if (ship.x > canv.width + ship.r) ship.x = 0 - ship.r;
   if (ship.y < 0 - ship.r) ship.y = canv.height + ship.r;
   else if (ship.y > canv.height + ship.r) ship.y = 0 - ship.r;
   
-  // MOVIMENTO DOS LASERS
   for (var i = ship.lasers.length - 1; i >= 0; i--) {
     if (ship.lasers[i].dist > LASER_DIST * canv.width) {
       ship.lasers.splice(i, 1);
@@ -524,7 +496,6 @@ function update() {
     else if (ship.lasers[i].y > canv.height) ship.lasers[i].y = 0;
   }
   
-  // MOVIMENTO DOS ASTEROIDES
   for (var i = 0; i < roids.length; i++) {
     roids[i].x += roids[i].xv;
     roids[i].y += roids[i].yv;
