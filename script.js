@@ -33,11 +33,10 @@ var canv = document.getElementById("gameCanvas");
 var ctx = canv.getContext("2d");
 
 // CONFIGURAÇÃO DE IMAGENS E EFEITOS NEON
-// Imagem da nave
 var shipImg = new Image();
 shipImg.src = "ship.png";
 
-// Imagens dos asteroides (criptomoedas): crypto1.png a crypto8.png
+// Asteroids images (crypto1.png a crypto8.png)
 var cryptoImgs = [];
 var cryptoSrcs = [
   "crypto1.png", "crypto2.png", "crypto3.png", "crypto4.png",
@@ -49,7 +48,7 @@ cryptoSrcs.forEach(src => {
   cryptoImgs.push(img);
 });
 
-// Funções de glow para efeitos neon
+// Funções de glow para efeito neon
 function applyGlow(color = "#00eaff") {
   ctx.shadowBlur = 20;
   ctx.shadowColor = color;
