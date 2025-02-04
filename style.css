@@ -1,0 +1,84 @@
+/* ===================================================================
+   Reset Básico e Estilos Globais
+   =================================================================== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  font-family: 'Orbitron', sans-serif;
+  color: #e0e0e0;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* BACKGROUND: a imagem back2.gif está na raiz */
+body::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url("back2.gif") no-repeat center center fixed;
+  background-size: cover;
+  opacity: 0.8;
+  z-index: -2;
+}
+
+/* Exemplo de elemento fixo com efeito neon (Crypto Ticker) */
+#crypto-ticker {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  padding: 15px 0;
+  background: #111;
+  font-size: 20px;
+  text-align: center;
+  z-index: 1000;
+  color: #00eaff;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { text-shadow: 0 0 5px #00eaff; }
+  50% { text-shadow: 0 0 20px #00eaff; }
+  100% { text-shadow: 0 0 5px #00eaff; }
+}
+
+/* Estilo do Canvas */
+canvas {
+  border-radius: 10px;
+  margin: 0 auto;
+  z-index: 1;
+  border: 3px solid #00eaff;
+  box-shadow: 0 0 20px #00eaff;
+}
+
+/* Botões e elementos extras com efeito neon */
+.button {
+  padding: 14px 28px;
+  font-size: 1rem;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background: #00eaff;
+  color: #000;
+  box-shadow: 0 0 15px #00eaff;
+  transition: transform 0.2s, box-shadow 0.3s;
+}
+
+.button:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 25px #00eaff;
+}
