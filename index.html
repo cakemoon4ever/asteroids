@@ -4,61 +4,68 @@
   <meta charset="UTF-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <!-- Como todos os arquivos estão na raiz da pasta /asteroids -->
+  <!-- Todos os arquivos estão na raiz /asteroids -->
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron&display=swap" rel="stylesheet" />
   <link rel="icon" href="405-4056691_spaceship-png.png" type="image/x-icon" />
   <title>Cakemoon Asteroids Battle</title>
-  <style>
-    /* Estilos para o Splash Screen */
-    #splashModal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: black;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 2000;
-      transition: opacity 1s ease-out;
-    }
-    #splashModal.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
-    /* Se quiser adicionar um efeito de glow à logo, pode usar filtros CSS */
-    #splashModal img {
-      max-width: 300px;
-      filter: drop-shadow(0 0 10px #00eaff);
-      animation: pulse 2s infinite;
-    }
-    @keyframes pulse {
-      0% { filter: drop-shadow(0 0 5px #00eaff); }
-      50% { filter: drop-shadow(0 0 20px #00eaff); }
-      100% { filter: drop-shadow(0 0 5px #00eaff); }
-    }
-  </style>
 </head>
 <body>
-  <!-- Splash Screen com a imagem logo.png -->
+  <!-- Splash Screen -->
   <div id="splashModal">
-    <img id="splash-logo" src="logo.png" alt="Logo Cakemoon Asteroids Battle" />
+    <div id="splashContent">
+      <!-- A imagem do logo -->
+      <img id="splashLogo" src="logo.png" alt="Logo Cakemoon Asteroids Battle" />
+      <!-- O nome do jogo, que começa grande e diminui com efeito de pulsação e glow -->
+      <h1 id="splashTitle">Cakemoon Asteroids Battle</h1>
+    </div>
+  </div>
+
+  <!-- Modal de Instruções -->
+  <div id="instructionsModal">
+    <div id="instructionsContent">
+      <h2>Como Jogar</h2>
+      <p>
+        Use as setas para mover a nave:<br>
+        - Seta para cima: acelerar<br>
+        - Setas para esquerda/direita: girar<br>
+        - Espaço: atirar
+      </p>
+      <p>
+        Você começa com 3 vidas. As vidas são exibidas no canto superior esquerdo.<br>
+        O placar aparece no topo (sua pontuação e o melhor score).<br>
+        Desvie dos asteroides e destrua-os com seus lasers!
+      </p>
+      <button id="startGameBtn" class="button">Iniciar Jogo</button>
+    </div>
   </div>
 
   <!-- Canvas do jogo -->
   <canvas id="gameCanvas" width="760" height="570"></canvas>
 
-  <!-- Script do jogo -->
+  <!-- Scripts -->
   <script src="script.js"></script>
   <script>
-    // Após o carregamento da página, aguarda 3 segundos e esconde o splash
+    // Variáveis para controle dos modais
+    const splashModal = document.getElementById('splashModal');
+    const instructionsModal = document.getElementById('instructionsModal');
+    const startGameBtn = document.getElementById('startGameBtn');
+
+    // Ao carregar a página, inicia a animação do splash.
     window.addEventListener('load', function() {
+      // Após 3 segundos, dispara a animação de "zoom out" do splash.
       setTimeout(function() {
-        const splash = document.getElementById('splashModal');
-        splash.classList.add('hidden');
-      }, 3000); // 3000 ms = 3 segundos
+        splashModal.classList.add('hidden');
+      }, 3000);
+      // Exibe o modal de instruções após 3,5 segundos (após o splash)
+      setTimeout(function() {
+        instructionsModal.classList.remove('hidden');
+      }, 3500);
+    });
+
+    // Ao clicar em "Iniciar Jogo", oculta o modal de instruções.
+    startGameBtn.addEventListener('click', function() {
+      instructionsModal.classList.add('hidden');
     });
   </script>
 </body>
