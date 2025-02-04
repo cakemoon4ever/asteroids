@@ -1,5 +1,5 @@
 /* ===================================================================
-   Reset Básico e Estilos Globais
+   Reset Basics and Global Styles
    =================================================================== */
 * {
   margin: 0;
@@ -17,7 +17,7 @@ body {
   overflow: hidden;
   background: #000;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
   align-items: center;
   position: relative;
 }
@@ -25,7 +25,7 @@ body {
 /* ===================================================================
    Background
    =================================================================== */
-/* A imagem de fundo (back2.gif) está na raiz */
+/* Uses back2.gif (in root) as background with opacity */
 body::before {
   content: "";
   position: fixed;
@@ -40,66 +40,36 @@ body::before {
 }
 
 /* ===================================================================
-   Splash Screen
+   Game Header
    =================================================================== */
-#splashModal {
+/* Fixed header at the top of the screen with the logo and game name */
+#gameHeader {
   position: fixed;
   top: 0;
-  left: 0;
   width: 100%;
-  height: 100%;
-  background-color: black;
+  height: 80px;
+  background: rgba(0, 0, 0, 0.8);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 3000;
-  /* Inicialmente, sem classe "hidden" */
-  transition: opacity 1s ease-out, transform 1s ease-out;
+  z-index: 2900;
+  border-bottom: 2px solid #00eaff;
 }
 
-#splashModal.hidden {
-  opacity: 0;
-  pointer-events: none;
-  transform: scale(0.5); /* Diminui o tamanho para 50% */
-}
-
-#splashContent {
-  text-align: center;
-}
-
-#splashLogo {
-  max-width: 500px;
-  /* Começa maior e diminui com a animação via transform (pode ajustar conforme desejar) */
-  transform: scale(1.2);
-  transition: transform 1s ease-out;
+#gameHeader #headerLogo {
+  max-height: 60px;
+  margin-right: 15px;
   filter: drop-shadow(0 0 10px #00eaff);
-  animation: pulseLogo 2s infinite;
 }
 
-@keyframes pulseLogo {
-  0% { filter: drop-shadow(0 0 5px #00eaff); }
-  50% { filter: drop-shadow(0 0 20px #00eaff); }
-  100% { filter: drop-shadow(0 0 5px #00eaff); }
-}
-
-#splashTitle {
-  font-size: 48px;
-  margin-top: 20px;
+#gameHeader #headerTitle {
+  font-size: 32px;
   color: #00eaff;
   text-shadow: 0 0 20px #00eaff, 0 0 40px #00eaff;
-  transform: scale(1.2);
-  transition: transform 1s ease-out;
-  animation: pulseText 2s infinite;
-}
-
-@keyframes pulseText {
-  0% { text-shadow: 0 0 10px #00eaff; }
-  50% { text-shadow: 0 0 30px #00eaff; }
-  100% { text-shadow: 0 0 10px #00eaff; }
 }
 
 /* ===================================================================
-   Instruções (Modal)
+   Instructions Modal
    =================================================================== */
 #instructionsModal {
   position: fixed;
@@ -167,18 +137,18 @@ body::before {
 }
 
 /* ===================================================================
-   Canvas do Jogo
+   Canvas
    =================================================================== */
 canvas {
+  margin-top: 90px; /* Leave space for header */
   border-radius: 10px;
-  margin: 0 auto;
   z-index: 1;
   border: 3px solid #00eaff;
   box-shadow: 0 0 20px #00eaff;
 }
 
 /* ===================================================================
-   Botões e Elementos Extras com Efeito Neon
+   Buttons (General)
    =================================================================== */
 .button {
   padding: 14px 28px;
@@ -198,11 +168,11 @@ canvas {
 }
 
 /* ===================================================================
-   Exemplo: Crypto Ticker (opcional)
+   Optional: Crypto Ticker (Example Element)
    =================================================================== */
 #crypto-ticker {
   position: fixed;
-  top: 0;
+  top: 80px;
   width: 100%;
   padding: 15px 0;
   background: #111;
