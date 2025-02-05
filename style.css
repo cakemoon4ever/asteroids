@@ -25,7 +25,7 @@ body {
 /* ===================================================================
    Background
    =================================================================== */
-/* Uses back2.gif as background */
+/* Uses back2.gif as background (ensure the file exists in the root) */
 body::before {
   content: "";
   position: fixed;
