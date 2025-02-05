@@ -1,5 +1,3 @@
-asteroids scrypt
-
 // CONFIGURAÇÕES GERAIS
 const FPS = 30; 
 const FRICTION = 0.7;
