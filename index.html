@@ -1,3 +1,5 @@
+asteroids index
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -60,15 +62,10 @@
     </div>
   </div>
 
-  <!-- Novo elemento: Bitcoin Mining Info -->
-  <div id="miningInfo">
-    Bitcoin mining: <span id="miningTimer">00:00:00</span> | BTC mined: <span id="btcMined">0.000000</span>
-  </div>
-
   <!-- Canvas do jogo -->
   <canvas id="gameCanvas" width="760" height="570"></canvas>
 
-  <!-- Footer fixo -->
+  <!-- Footer -->
   <footer id="gameFooter">
     <span>MVP Games - Crypto 4 fun</span>
     <button id="docsBtn" class="button">DOCS</button>
@@ -77,41 +74,36 @@
   <!-- Scripts -->
   <script src="script.js"></script>
   <script>
-    // Aguarda que o DOM esteja carregado
-    document.addEventListener('DOMContentLoaded', function() {
-      const splashModal = document.getElementById('splashModal');
-      const instructionsModal = document.getElementById('instructionsModal');
-      const startGameBtn = document.getElementById('startGameBtn');
-      
-      // Splash: esconde após 3 segundos
-      setTimeout(() => {
+    // --- Splash Screen e Instruções ---
+    const splashModal = document.getElementById('splashModal');
+    const instructionsModal = document.getElementById('instructionsModal');
+    const startGameBtn = document.getElementById('startGameBtn');
+
+    // Splash animation: after 3 seconds, hide splash (scale down and fade out)
+    window.addEventListener('load', function() {
+      setTimeout(function() {
         splashModal.classList.add('hidden');
       }, 3000);
-      // Exibe o modal de instruções 500ms depois
-      setTimeout(() => {
+      // Show instructions 500ms after splash is hidden
+      setTimeout(function() {
         instructionsModal.classList.remove('hidden');
       }, 3500);
-      
-      // Ao clicar em "Start Game", fecha o modal de instruções, inicia o jogo e o timer de mineração
-      startGameBtn.addEventListener('click', function() {
-        instructionsModal.classList.add('hidden');
-        console.log("Start Game clicked – game starting...");
-        gameStarted = true;
-        newGame();
-        startMiningTimer();
-      });
-      
-      // DOCS Modal
-      const docsModal = document.getElementById('docsModal');
-      const docsBtn = document.getElementById('docsBtn');
-      const closeDocsBtn = document.getElementById('closeDocsBtn');
-      
-      docsBtn.addEventListener('click', function() {
-        docsModal.classList.remove('hidden');
-      });
-      closeDocsBtn.addEventListener('click', function() {
-        docsModal.classList.add('hidden');
-      });
+    });
+
+    startGameBtn.addEventListener('click', function() {
+      instructionsModal.classList.add('hidden');
+    });
+
+    // --- DOCS Modal ---
+    const docsModal = document.getElementById('docsModal');
+    const docsBtn = document.getElementById('docsBtn');
+    const closeDocsBtn = document.getElementById('closeDocsBtn');
+
+    docsBtn.addEventListener('click', function() {
+      docsModal.classList.remove('hidden');
+    });
+    closeDocsBtn.addEventListener('click', function() {
+      docsModal.classList.add('hidden');
     });
   </script>
 </body>
