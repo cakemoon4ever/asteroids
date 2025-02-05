@@ -45,7 +45,7 @@
     </div>
   </div>
 
-  <!-- DOCS Modal (About the game) -->
+  <!-- DOCS Modal (informações sobre o jogo) -->
   <div id="docsModal" class="hidden">
     <div id="docsContent">
       <h2>About the Game</h2>
@@ -54,7 +54,7 @@
         Enjoy dynamic glow effects, responsive animations, and a futuristic interface designed for the metaverse.
       </p>
       <p>
-        Developed by Sherk Games - Visit <a href="https://sherkfun.io" target="_blank">Sherkfun.io</a> for more games.
+        Developed by MVP Games - Visit <a href="https://t.me/Marcelo_VP" target="_blank">Here</a> for more games.
       </p>
       <button id="closeDocsBtn" class="button">Close</button>
     </div>
@@ -63,37 +63,33 @@
   <!-- Canvas do jogo -->
   <canvas id="gameCanvas" width="760" height="570"></canvas>
 
-  <!-- Footer fixo -->
+  <!-- Footer -->
   <footer id="gameFooter">
-    <span>Sherk Games - Sherkfun.io</span>
+    <span>MVP Games - Crypto 4 fun</span>
     <button id="docsBtn" class="button">DOCS</button>
   </footer>
 
   <!-- Scripts -->
   <script src="script.js"></script>
   <script>
-    // --- Splash Screen & Instructions ---
+    // --- Splash Screen e Instruções ---
     const splashModal = document.getElementById('splashModal');
     const instructionsModal = document.getElementById('instructionsModal');
     const startGameBtn = document.getElementById('startGameBtn');
 
-    // Após o carregamento, aguarda 3 segundos para ocultar o splash
+    // Splash animation: after 3 seconds, hide splash (scale down and fade out)
     window.addEventListener('load', function() {
       setTimeout(function() {
         splashModal.classList.add('hidden');
       }, 3000);
-      // Exibe o modal de instruções 500ms após o splash ser ocultado
+      // Show instructions 500ms after splash is hidden
       setTimeout(function() {
         instructionsModal.classList.remove('hidden');
       }, 3500);
     });
 
-    // Quando o usuário clicar em "Start Game", fecha o modal de instruções e inicia o jogo.
     startGameBtn.addEventListener('click', function() {
       instructionsModal.classList.add('hidden');
-      console.log("Start Game clicked – game starting...");
-      gameStarted = true;
-      newGame();
     });
 
     // --- DOCS Modal ---
