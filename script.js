@@ -1,5 +1,5 @@
 // CONFIGURAÇÕES GERAIS
-const FPS = 30; 
+const FPS = 30;
 const FRICTION = 0.7;
 const GAME_LIVES = 3;
 const LASER_DIST = 0.6;
@@ -28,7 +28,7 @@ const SOUND_ON = true;
 const TEXT_FADE_TIME = 2.5;
 const TEXT_SIZE = 35;
 
-// Variável para controlar o estado do jogo
+// Variável de controle para iniciar o jogo somente após clicar "Start Game"
 var gameStarted = false;
 
 /** @type {HTMLCanvasElement} */
@@ -39,7 +39,7 @@ var ctx = canv.getContext("2d");
 var shipImg = new Image();
 shipImg.src = "ship.png";
 
-// Asteroids images (crypto1.png a crypto8.png)
+// Asteroids images: crypto1.png a crypto8.png
 var cryptoImgs = [];
 var cryptoSrcs = [
   "crypto1.png", "crypto2.png", "crypto3.png", "crypto4.png",
@@ -72,6 +72,7 @@ var roidsLeft, roidsTotal;
 // PARÂMETROS DO JOGO
 var level, lives, roids, score, scoreHigh, ship, text, textAlpha;
 
+// newGame() será chamada quando o jogo iniciar (após Start Game)
 function newGame() {
   level = 0;
   lives = GAME_LIVES;
@@ -82,7 +83,206 @@ function newGame() {
   newLevel();
 }
 
-// Somente atualiza se o jogo já foi iniciado
+function newLevel() {
+  music.setAsteroidRatio(1);
+  text = "Level " + (level + 1);
+  textAlpha = 1.0;
+  createAsteroidBelt();
+}
+
+function createAsteroidBelt() {
+  roids = [];
+  roidsTotal = (ROID_NUM + level) * 7;
+  roidsLeft = roidsTotal;
+  var x, y;
+  for (var i = 0; i < ROID_NUM + level; i++) {
+    do {
+      x = Math.floor(Math.random() * canv.width);
+      y = Math.floor(Math.random() * canv.height);
+    } while (distBetweenPoints(ship.x, ship.y, x, y) < ROID_SIZE * 2 + ship.r);
+    roids.push(newAsteroid(x, y, Math.ceil(ROID_SIZE / 2)));
+  }
+}
+
+function destroyAsteroid(index) {
+  var x = roids[index].x;
+  var y = roids[index].y;
+  var r = roids[index].r;
+
+  if (r === Math.ceil(ROID_SIZE / 2)) {
+    roids.push(newAsteroid(x, y, Math.ceil(ROID_SIZE / 4)));
+    roids.push(newAsteroid(x, y, Math.ceil(ROID_SIZE / 4)));
+    score += ROID_PTS_LGE;
+  } else if (r === Math.ceil(ROID_SIZE / 4)) {
+    roids.push(newAsteroid(x, y, Math.ceil(ROID_SIZE / 8)));
+    roids.push(newAsteroid(x, y, Math.ceil(ROID_SIZE / 8)));
+    score += ROID_PTS_MED;
+  } else {
+    score += ROID_PTS_SML;
+  }
+
+  if (score > scoreHigh) {
+    scoreHigh = score;
+    localStorage.setItem(SAVE_KEY_SCORE, scoreHigh);
+  }
+
+  roids.splice(index, 1);
+  fxHit.play();
+  roidsLeft--;
+  music.setAsteroidRatio(roidsLeft / roidsTotal);
+
+  if (roids.length === 0) {
+    level++;
+    newLevel();
+  }
+}
+
+function distBetweenPoints(x1, y1, x2, y2) {
+  return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+}
+
+function drawShip(x, y, a) {
+  ctx.save();
+  ctx.translate(x, y);
+  ctx.rotate(-a + Math.PI / 2);
+  applyGlow("#00eaff");
+  ctx.drawImage(shipImg, -SHIP_SIZE, -SHIP_SIZE, SHIP_SIZE * 2, SHIP_SIZE * 2);
+  resetGlow();
+  ctx.restore();
+}
+
+function explodeShip() {
+  ship.explodeTime = Math.ceil(SHIP_EXPLODE_DUR * FPS);
+  fxExplode.play();
+}
+
+function gameOver() {
+  ship.dead = true;
+  text = "Game Over";
+  textAlpha = 1.0;
+}
+
+function keyDown(ev) {
+  if (ship.dead) return;
+  switch (ev.keyCode) {
+    case 32:
+      shootLaser();
+      break;
+    case 37:
+      ship.rot = SHIP_TURN_SPD / 180 * Math.PI / FPS;
+      break;
+    case 38:
+      ship.thrusting = true;
+      break;
+    case 39:
+      ship.rot = -SHIP_TURN_SPD / 180 * Math.PI / FPS;
+      break;
+  }
+}
+
+function keyUp(ev) {
+  if (ship.dead) return;
+  switch (ev.keyCode) {
+    case 32:
+      ship.canShoot = true;
+      break;
+    case 37:
+      ship.rot = 0;
+      break;
+    case 38:
+      ship.thrusting = false;
+      break;
+    case 39:
+      ship.rot = 0;
+      break;
+  }
+}
+
+function shootLaser() {
+  if (ship.canShoot && ship.lasers.length < LASER_MAX) {
+    ship.lasers.push({
+      x: ship.x + 4 / 3 * ship.r * Math.cos(ship.a),
+      y: ship.y - 4 / 3 * ship.r * Math.sin(ship.a),
+      xv: LASER_SPD * Math.cos(ship.a) / FPS,
+      yv: -LASER_SPD * Math.sin(ship.a) / FPS,
+      dist: 0,
+      explodeTime: 0
+    });
+    fxLaser.play();
+  }
+  ship.canShoot = false;
+}
+
+function newAsteroid(x, y, r) {
+  var lvlMult = 1 + 0.1 * level;
+  var roid = {
+    x: x,
+    y: y,
+    xv: (Math.random() * ROID_SPD * lvlMult / FPS) * (Math.random() < 0.5 ? 1 : -1),
+    yv: (Math.random() * ROID_SPD * lvlMult / FPS) * (Math.random() < 0.5 ? 1 : -1),
+    a: Math.random() * Math.PI * 2,
+    r: r,
+    offs: [],
+    vert: Math.floor(Math.random() * (ROID_VERT + 1) + ROID_VERT / 2)
+  };
+  for (var i = 0; i < roid.vert; i++) {
+    roid.offs.push(Math.random() * ROID_JAG * 2 + 1 - ROID_JAG);
+  }
+  roid.img = cryptoImgs[Math.floor(Math.random() * cryptoImgs.length)];
+  return roid;
+}
+
+function Music(srcLow, srcHigh) {
+  this.soundLow = new Audio(srcLow);
+  this.soundHigh = new Audio(srcHigh);
+  this.low = true;
+  this.tempo = 1.0;
+  this.beatTime = 0;
+  this.play = function() {
+    if (MUSIC_ON) {
+      if (this.low) {
+        this.soundLow.play();
+      } else {
+        this.soundHigh.play();
+      }
+      this.low = !this.low;
+    }
+  }
+  this.setAsteroidRatio = function(ratio) {
+    this.tempo = 1.0 - 0.75 * (1.0 - ratio);
+  }
+  this.tick = function() {
+    if (this.beatTime === 0) {
+      this.play();
+      this.beatTime = Math.ceil(this.tempo * FPS);
+    } else {
+      this.beatTime--;
+    }
+  }
+}
+
+function Sound(src, maxStreams = 1, vol = 1.0) {
+  this.streamNum = 0;
+  this.streams = [];
+  for (var i = 0; i < maxStreams; i++) {
+    this.streams.push(new Audio(src));
+    this.streams[i].volume = vol;
+  }
+  this.play = function() {
+    if (SOUND_ON) {
+      this.streamNum = (this.streamNum + 1) % maxStreams;
+      this.streams[this.streamNum].play();
+    }
+  }
+  this.stop = function() {
+    this.streams[this.streamNum].pause();
+    this.streams[this.streamNum].currentTime = 0;
+  }
+}
+
+// O update só roda se gameStarted for true
+setInterval(update, 1000 / FPS);
+
 function update() {
   if (!gameStarted) return;
   
@@ -270,7 +470,7 @@ function update() {
     } else {
       ship.lasers[i].x += ship.lasers[i].xv;
       ship.lasers[i].y += ship.lasers[i].yv;
-      ship.lasers[i].dist += Math.sqrt(ship.lasers[i].xv**2 + ship.lasers[i].yv**2);
+      ship.lasers[i].dist += Math.sqrt(ship.lasers[i].xv ** 2 + ship.lasers[i].yv ** 2);
     }
     if (ship.lasers[i].x < 0) ship.lasers[i].x = canv.width;
     else if (ship.lasers[i].x > canv.width) ship.lasers[i].x = 0;
@@ -287,123 +487,3 @@ function update() {
     else if (roids[i].y > canv.height + roids[i].r) roids[i].y = 0 - roids[i].r;
   }
 }
-
-// Inicia um novo jogo (será chamado somente após Start Game)
-function newLevel() {
-  music.setAsteroidRatio(1);
-  text = "Level " + (level + 1);
-  textAlpha = 1.0;
-  createAsteroidBelt();
-}
-
-function newShip() {
-  return {
-    x: canv.width / 2,
-    y: canv.height / 2,
-    a: 90 / 180 * Math.PI,
-    r: SHIP_SIZE,
-    blinkNum: Math.ceil(SHIP_INV_DUR / SHIP_BLINK_DUR),
-    blinkTime: Math.ceil(SHIP_BLINK_DUR * FPS),
-    canShoot: true,
-    dead: false,
-    explodeTime: 0,
-    lasers: [],
-    rot: 0,
-    thrusting: false,
-    thrust: { x: 0, y: 0 }
-  };
-}
-
-function newGame() {
-  level = 0;
-  lives = GAME_LIVES;
-  score = 0;
-  ship = newShip();
-  var scoreStr = localStorage.getItem(SAVE_KEY_SCORE);
-  scoreHigh = scoreStr ? parseInt(scoreStr) : 0;
-  newLevel();
-}
-
-function shootLaser() {
-  if (ship.canShoot && ship.lasers.length < LASER_MAX) {
-    ship.lasers.push({
-      x: ship.x + 4 / 3 * ship.r * Math.cos(ship.a),
-      y: ship.y - 4 / 3 * ship.r * Math.sin(ship.a),
-      xv: LASER_SPD * Math.cos(ship.a) / FPS,
-      yv: -LASER_SPD * Math.sin(ship.a) / FPS,
-      dist: 0,
-      explodeTime: 0
-    });
-    fxLaser.play();
-  }
-  ship.canShoot = false;
-}
-
-function newAsteroid(x, y, r) {
-  var lvlMult = 1 + 0.1 * level;
-  var roid = {
-    x: x,
-    y: y,
-    xv: (Math.random() * ROID_SPD * lvlMult / FPS) * (Math.random() < 0.5 ? 1 : -1),
-    yv: (Math.random() * ROID_SPD * lvlMult / FPS) * (Math.random() < 0.5 ? 1 : -1),
-    a: Math.random() * Math.PI * 2,
-    r: r,
-    offs: [],
-    vert: Math.floor(Math.random() * (ROID_VERT + 1) + ROID_VERT / 2)
-  };
-  for (var i = 0; i < roid.vert; i++) {
-    roid.offs.push(Math.random() * ROID_JAG * 2 + 1 - ROID_JAG);
-  }
-  roid.img = cryptoImgs[Math.floor(Math.random() * cryptoImgs.length)];
-  return roid;
-}
-
-function Music(srcLow, srcHigh) {
-  this.soundLow = new Audio(srcLow);
-  this.soundHigh = new Audio(srcHigh);
-  this.low = true;
-  this.tempo = 1.0;
-  this.beatTime = 0;
-  this.play = function() {
-    if (MUSIC_ON) {
-      if (this.low) {
-        this.soundLow.play();
-      } else {
-        this.soundHigh.play();
-      }
-      this.low = !this.low;
-    }
-  }
-  this.setAsteroidRatio = function(ratio) {
-    this.tempo = 1.0 - 0.75 * (1.0 - ratio);
-  }
-  this.tick = function() {
-    if (this.beatTime === 0) {
-      this.play();
-      this.beatTime = Math.ceil(this.tempo * FPS);
-    } else {
-      this.beatTime--;
-    }
-  }
-}
-
-function Sound(src, maxStreams = 1, vol = 1.0) {
-  this.streamNum = 0;
-  this.streams = [];
-  for (var i = 0; i < maxStreams; i++) {
-    this.streams.push(new Audio(src));
-    this.streams[i].volume = vol;
-  }
-  this.play = function() {
-    if (SOUND_ON) {
-      this.streamNum = (this.streamNum + 1) % maxStreams;
-      this.streams[this.streamNum].play();
-    }
-  }
-  this.stop = function() {
-    this.streams[this.streamNum].pause();
-    this.streams[this.streamNum].currentTime = 0;
-  }
-}
-
-setInterval(update, 1000 / FPS);
