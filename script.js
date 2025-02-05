@@ -28,6 +28,9 @@ const SOUND_ON = true;
 const TEXT_FADE_TIME = 2.5;
 const TEXT_SIZE = 35;
 
+// Variável para controlar se o jogo já foi iniciado
+var gameStarted = false;
+
 /** @type {HTMLCanvasElement} */
 var canv = document.getElementById("gameCanvas");
 var ctx = canv.getContext("2d");
@@ -68,14 +71,24 @@ var roidsLeft, roidsTotal;
 
 // PARÂMETROS DO JOGO
 var level, lives, roids, score, scoreHigh, ship, text, textAlpha;
-newGame();
 
-// EVENTOS DE TECLADO
-document.addEventListener("keydown", keyDown);
-document.addEventListener("keyup", keyUp);
+// newGame() NÃO é chamada globalmente; ela será chamada quando Start Game for clicado.
+function newGame() {
+  level = 0;
+  lives = GAME_LIVES;
+  score = 0;
+  ship = newShip();
+  var scoreStr = localStorage.getItem(SAVE_KEY_SCORE);
+  scoreHigh = scoreStr ? parseInt(scoreStr) : 0;
+  newLevel();
+}
 
-// LOOP DE ATUALIZAÇÃO DO JOGO
-setInterval(update, 1000 / FPS);
+function newLevel() {
+  music.setAsteroidRatio(1);
+  text = "Level " + (level + 1);
+  textAlpha = 1.0;
+  createAsteroidBelt();
+}
 
 function createAsteroidBelt() {
   roids = [];
@@ -96,11 +109,11 @@ function destroyAsteroid(index) {
   var y = roids[index].y;
   var r = roids[index].r;
 
-  if (r == Math.ceil(ROID_SIZE / 2)) {
+  if (r === Math.ceil(ROID_SIZE / 2)) {
     roids.push(newAsteroid(x, y, Math.ceil(ROID_SIZE / 4)));
     roids.push(newAsteroid(x, y, Math.ceil(ROID_SIZE / 4)));
     score += ROID_PTS_LGE;
-  } else if (r == Math.ceil(ROID_SIZE / 4)) {
+  } else if (r === Math.ceil(ROID_SIZE / 4)) {
     roids.push(newAsteroid(x, y, Math.ceil(ROID_SIZE / 8)));
     roids.push(newAsteroid(x, y, Math.ceil(ROID_SIZE / 8)));
     score += ROID_PTS_MED;
@@ -151,7 +164,7 @@ function gameOver() {
 
 function keyDown(ev) {
   if (ship.dead) return;
-  switch(ev.keyCode) {
+  switch (ev.keyCode) {
     case 32:
       shootLaser();
       break;
@@ -169,7 +182,7 @@ function keyDown(ev) {
 
 function keyUp(ev) {
   if (ship.dead) return;
-  switch(ev.keyCode) {
+  switch (ev.keyCode) {
     case 32:
       ship.canShoot = true;
       break;
@@ -183,6 +196,21 @@ function keyUp(ev) {
       ship.rot = 0;
       break;
   }
+}
+
+function shootLaser() {
+  if (ship.canShoot && ship.lasers.length < LASER_MAX) {
+    ship.lasers.push({
+      x: ship.x + 4 / 3 * ship.r * Math.cos(ship.a),
+      y: ship.y - 4 / 3 * ship.r * Math.sin(ship.a),
+      xv: LASER_SPD * Math.cos(ship.a) / FPS,
+      yv: -LASER_SPD * Math.sin(ship.a) / FPS,
+      dist: 0,
+      explodeTime: 0
+    });
+    fxLaser.play();
+  }
+  ship.canShoot = false;
 }
 
 function newAsteroid(x, y, r) {
@@ -202,56 +230,6 @@ function newAsteroid(x, y, r) {
   }
   roid.img = cryptoImgs[Math.floor(Math.random() * cryptoImgs.length)];
   return roid;
-}
-
-function newGame() {
-  level = 0;
-  lives = GAME_LIVES;
-  score = 0;
-  ship = newShip();
-  var scoreStr = localStorage.getItem(SAVE_KEY_SCORE);
-  scoreHigh = scoreStr ? parseInt(scoreStr) : 0;
-  newLevel();
-}
-
-function newLevel() {
-  music.setAsteroidRatio(1);
-  text = "Level " + (level + 1);
-  textAlpha = 1.0;
-  createAsteroidBelt();
-}
-
-function newShip() {
-  return {
-    x: canv.width / 2,
-    y: canv.height / 2,
-    a: 90 / 180 * Math.PI,
-    r: SHIP_SIZE,
-    blinkNum: Math.ceil(SHIP_INV_DUR / SHIP_BLINK_DUR),
-    blinkTime: Math.ceil(SHIP_BLINK_DUR * FPS),
-    canShoot: true,
-    dead: false,
-    explodeTime: 0,
-    lasers: [],
-    rot: 0,
-    thrusting: false,
-    thrust: { x: 0, y: 0 }
-  };
-}
-
-function shootLaser() {
-  if (ship.canShoot && ship.lasers.length < LASER_MAX) {
-    ship.lasers.push({
-      x: ship.x + 4 / 3 * ship.r * Math.cos(ship.a),
-      y: ship.y - 4 / 3 * ship.r * Math.sin(ship.a),
-      xv: LASER_SPD * Math.cos(ship.a) / FPS,
-      yv: -LASER_SPD * Math.sin(ship.a) / FPS,
-      dist: 0,
-      explodeTime: 0
-    });
-    fxLaser.play();
-  }
-  ship.canShoot = false;
 }
 
 function Music(srcLow, srcHigh) {
@@ -302,7 +280,12 @@ function Sound(src, maxStreams = 1, vol = 1.0) {
   }
 }
 
+// O loop de update roda continuamente, mas a função update() retorna imediatamente se gameStarted for false.
+setInterval(update, 1000 / FPS);
+
 function update() {
+  if (!gameStarted) return;
+  
   var blinkOn = ship.blinkNum % 2 === 0;
   var exploding = ship.explodeTime > 0;
   
@@ -487,7 +470,7 @@ function update() {
     } else {
       ship.lasers[i].x += ship.lasers[i].xv;
       ship.lasers[i].y += ship.lasers[i].yv;
-      ship.lasers[i].dist += Math.sqrt(ship.lasers[i].xv**2 + ship.lasers[i].yv**2);
+      ship.lasers[i].dist += Math.sqrt(ship.lasers[i].xv ** 2 + ship.lasers[i].yv ** 2);
     }
     if (ship.lasers[i].x < 0) ship.lasers[i].x = canv.width;
     else if (ship.lasers[i].x > canv.width) ship.lasers[i].x = 0;
