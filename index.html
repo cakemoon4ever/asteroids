@@ -54,7 +54,7 @@
         Enjoy dynamic glow effects, responsive animations, and a futuristic interface designed for the metaverse.
       </p>
       <p>
-        Developed by MVP Games - Visit <a href="https://t.me/Marcelo_VP" target="_blank">here</a> for more games.
+        Developed by Sherk Games - Visit <a href="https://sherkfun.io" target="_blank">Sherkfun.io</a> for more games.
       </p>
       <button id="closeDocsBtn" class="button">Close</button>
     </div>
@@ -65,7 +65,7 @@
 
   <!-- Footer fixo -->
   <footer id="gameFooter">
-    <span>MVP Games - Crypto 4 fun</span>
+    <span>Sherk Games - Sherkfun.io</span>
     <button id="docsBtn" class="button">DOCS</button>
   </footer>
 
@@ -77,21 +77,22 @@
     const instructionsModal = document.getElementById('instructionsModal');
     const startGameBtn = document.getElementById('startGameBtn');
 
-    // Splash animation: after 3 seconds, hide the splash screen (scale down and fade out)
+    // Após o carregamento, aguarda 3 segundos para ocultar o splash
     window.addEventListener('load', function() {
       setTimeout(function() {
         splashModal.classList.add('hidden');
       }, 3000);
-      // Show instructions 500ms after the splash is hidden
+      // Exibe o modal de instruções 500ms após ocultar o splash
       setTimeout(function() {
         instructionsModal.classList.remove('hidden');
       }, 3500);
     });
 
-    // When "Start Game" is clicked, hide the instructions and start the game.
+    // Ao clicar em "Start Game", o modal de instruções é fechado e o jogo é iniciado
     startGameBtn.addEventListener('click', function() {
       instructionsModal.classList.add('hidden');
-      // Set gameStarted to true and call newGame() to reset/start the game.
+      console.log("Start Game clicked – game starting...");
+      // Ativa o jogo
       gameStarted = true;
       newGame();
     });
