@@ -25,7 +25,7 @@ body {
 /* ===================================================================
    Background
    =================================================================== */
-/* Uses back2.gif as background (ensure back2.gif is in the root) */
+/* Uses back2.gif as background */
 body::before {
   content: "";
   position: fixed;
@@ -272,7 +272,7 @@ canvas {
 }
 
 /* ===================================================================
-   Footer (Fixed)
+   Footer
    =================================================================== */
 #gameFooter {
   width: 100%;
