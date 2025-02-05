@@ -25,7 +25,7 @@ body {
 /* ===================================================================
    Background
    =================================================================== */
-/* Uses back2.gif as background */
+/* Uses back2.gif as background (certifique-se que back2.gif esteja na raiz) */
 body::before {
   content: "";
   position: fixed;
@@ -261,6 +261,22 @@ body::before {
 }
 
 /* ===================================================================
+   Mining Info (Digital Timer and BTC Mined)
+   =================================================================== */
+#miningInfo {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  text-align: center;
+  padding: 5px;
+  font-size: 16px;
+  color: #00eaff;
+  position: fixed;
+  bottom: 60px; /* Acima do footer */
+  z-index: 2850;
+  border-top: 1px solid #00eaff;
+}
+
+/* ===================================================================
    Canvas
    =================================================================== */
 canvas {
@@ -272,7 +288,7 @@ canvas {
 }
 
 /* ===================================================================
-   Footer
+   Footer (Fixed)
    =================================================================== */
 #gameFooter {
   width: 100%;
