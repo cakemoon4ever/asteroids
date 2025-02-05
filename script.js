@@ -28,7 +28,7 @@ const SOUND_ON = true;
 const TEXT_FADE_TIME = 2.5;
 const TEXT_SIZE = 35;
 
-// Variável de controle para iniciar o jogo somente após clicar "Start Game"
+// Variável para controlar o início do jogo
 var gameStarted = false;
 
 /** @type {HTMLCanvasElement} */
@@ -39,7 +39,7 @@ var ctx = canv.getContext("2d");
 var shipImg = new Image();
 shipImg.src = "ship.png";
 
-// Asteroids images: crypto1.png a crypto8.png
+// Imagens dos asteroides: crypto1.png a crypto8.png
 var cryptoImgs = [];
 var cryptoSrcs = [
   "crypto1.png", "crypto2.png", "crypto3.png", "crypto4.png",
@@ -51,7 +51,7 @@ cryptoSrcs.forEach(src => {
   cryptoImgs.push(img);
 });
 
-// Funções de glow para efeito neon
+// Funções de glow
 function applyGlow(color = "#00eaff") {
   ctx.shadowBlur = 20;
   ctx.shadowColor = color;
@@ -72,7 +72,6 @@ var roidsLeft, roidsTotal;
 // PARÂMETROS DO JOGO
 var level, lives, roids, score, scoreHigh, ship, text, textAlpha;
 
-// newGame() será chamada quando o jogo iniciar (após Start Game)
 function newGame() {
   level = 0;
   lives = GAME_LIVES;
@@ -280,7 +279,7 @@ function Sound(src, maxStreams = 1, vol = 1.0) {
   }
 }
 
-// O update só roda se gameStarted for true
+// O update loop só roda se gameStarted for true
 setInterval(update, 1000 / FPS);
 
 function update() {
